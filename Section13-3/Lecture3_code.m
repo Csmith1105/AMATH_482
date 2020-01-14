@@ -44,7 +44,7 @@ ave = abs(fftshift(ave))/5;
 
 figure(3)
 plot(ks,ave/max(ave),'r','Linewidth',2)
-set(gca,'Fontsize',16)
+set(gca,'Fontsize',16) % gcq = get current axis
 xlabel('frequency (k)')
 ylabel('|ut|')
 
