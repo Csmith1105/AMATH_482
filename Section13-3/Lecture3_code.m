@@ -26,7 +26,7 @@ for j=1:2
     utn=ut+noise*(randn(1,n)+1i*randn(1,n));
     ave = ave+utn;
 end
-ave = abs(fftshift(ave))/2;
+ave = abs(fftshift(ave))/2;  % not sure what this is doing
 
 figure(2)
 plot(ks,ave/max(ave),'r','Linewidth',2)
