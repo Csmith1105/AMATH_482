@@ -68,7 +68,7 @@ max_signal = max(avg(:));
 [max_x, max_y, max_z] = ind2sub(size(avg), find(avg == max_signal));
 
 % using the max coordinates, find frequency associated with max signal
-
+max_freq_x = 
 
 
 %% 2
