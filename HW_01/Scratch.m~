@@ -110,7 +110,7 @@ for j=1:1
     Un_filtered(:,:,:,j) = ifftn(Un_fft_filtered(:,:,:,j));
    
     % plot the signal data in the spatial domain
-    close all, isosurface(X,Y,Z,abs(Un_filtered(:,:,:,j)),0.02)
+    close all, isosurface(X,Y,Z,abs(Un_filtered(:,:,:,j)),0.08)
    
     title("Signal in Spatial Domain", 'Fontsize',18)
    
