@@ -12,7 +12,7 @@ clear; close all; clc;
 % returns the name, dimensions, size, and  
 % data type of all variables in the MAT-file
 
-load Testdata
+load Testdata;
 
 L = 15; % spatial domain
 n = 64; % Fourier modes, i.e. # of points in spatial range (2^6)
@@ -66,21 +66,25 @@ for j=1:20  % because we have 20 rows
    % pause(2)
 end
 
-% do we need fftshift here?
+% adjust this so that it corresponds to the indices
+% of the Kx,Ky,Kz matrices, then take absolute value
+% because we are interested in magnitude
 mean_fft = abs(fftshift(mean_fft))/20;  
 
-% vectorizes the matrix and get max value
+% vectorizes the matrix and get scalar max value
 max_signal = max(mean_fft(:));  % 271.8673
 
 % find the indices of the maximum value in the grid
-% (28, 42, 33) when you run fftshift of mean_fft
-[max_x, max_y, max_z] = ind2sub(size(mean_fft), find(mean_fft == max_signal));
+
+% returns the linear index corresponding to the max value in mean_fft
+[max_val, max_idx] = max(mean_fft(:))
+% converts the linear index to corresponding x, y, z indices
+[max_x, max_y, max_z] = ind2sub(size(mean_fft), max_idx);
 
 % using the max coordinates, find frequencies associated with max signal
-% (, , 0)
 kx_center = Kx(max_x, max_y, max_z); % 1.8850
-ky_center = Ky(max_x, max_y, max_z); 
-kz_center = Kz(max_x, max_y, max_z); 
+ky_center = Ky(max_x, max_y, max_z); % -1.0472
+kz_center = Kz(max_x, max_y, max_z); % 0
 
 %% 2
 % Filter the data around the center frequency determined above in 
@@ -95,7 +99,7 @@ kz_center = Kz(max_x, max_y, max_z);
 % I think the wider our filter, the more accurate the 
 % signal in the time domain will be
 
-filter = exp(-0.2*((Kx(:,:,:) - kx_center).^2 ... 
+filter = exp(-0.5*((Kx(:,:,:) - kx_center).^2 ... 
     + (Ky(:,:,:) - ky_center).^2 ... 
     + (Kz(:,:,:) - kz_center).^2)); 
 
@@ -105,14 +109,22 @@ filter = exp(-0.2*((Kx(:,:,:) - kx_center).^2 ...
 Un_fft_filtered = zeros(n,n,n,20);
 
 for j=1:1  % just bumped this down to one to troubleshoot
-   Un_fft_filtered(:,:,:,j) = Un_fft(:,:,:,j).*filter
+   Un_fft_filtered(:,:,:,j) = Un_fft(:,:,:,j).*filter;
+    
+   % FIGURE OUT HOW TO GET 
+   % returns the max signal value in the spatial domain and 
+   % the corresponding linear index 
+   % [max_spatial_signal, max_idx] = max(max(max(Un_filtered(:,:,:,j))));
+   % converts the linear index to corresponding x, y, z indices
+   % [max_x, max_y, max_z] = ind2sub(size(Un_filtered(:,:,:,j)), max_spatial_signal);
+   
    % plot the signal data in the frequency domain
    close all, isosurface(Kx,Ky,Kz,abs(Un_fft_filtered(:,:,:,j)),0.4)
+   title("Signal in Frequency Domain", 'Fontsize',18)
    axis([-10 10 -10 10 -10 10]), grid on, drawnow
    pause(5)
 end
 
-%% THIS DOESN'T WORK, THE PLOT IS A CUBE
 % convert the filtered fft data back to the spatial domain
 % plot3(X,Y,Z)
 
@@ -122,9 +134,13 @@ for j=1:1  % just bumped this down to one to troubleshoot
    Un_filtered(:,:,:,j) = ifftn(Un_fft_filtered(:,:,:,j));
    % plot the signal data in the spatial domain
    close all, isosurface(X,Y,Z,abs(Un_filtered(:,:,:,j)),0.02)
-   axis([-40 40 -40 40 -40 40]), grid on, drawnow
+   title("Signal in Spatial Domain", 'Fontsize',18)
+   axis([-20 20 -20 20 -20 20]), grid on, drawnow
    pause(5)
 end
+
+Un_filt_01 = abs(Un_filtered(:,:,:,1));
+mean_filt = mean(Un_filt_01(:));
 
 
 
