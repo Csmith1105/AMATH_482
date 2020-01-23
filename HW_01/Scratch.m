@@ -12,6 +12,9 @@ ky(:,:,2) = [7,5; 7,5];
 kz = [11,11; 9,9];
 kz(:,:,2) = [11,11; 9,9];
 
+Akx_1 = A.*kx;
+Akx_2 = A(:,:,:).*kx(:,:,:);
+
 % for every point in A, take the sum of the multiples of A at 
 % that point and the corresponding points in the kx, ky, kz matrices
 A_f = A(:,:,:).*kx(:,:,:)+A(:,:,:).*ky(:,:,:)+ A(:,:,:).*kz(:,:,:);
